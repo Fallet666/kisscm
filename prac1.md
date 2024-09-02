@@ -14,14 +14,25 @@ cat /etc/protocols | tail -n 5 | sort -nrk2 | awk '{print $2, $1}'
 
 ```bash
 #!/bin/bash
-
-msg="$1"
-border="+$(printf '%0.s-' $(seq ${#msg} + 2))+"
-
-echo "$border"
-echo "| $msg |"
-echo "$border"
+string=$1
+size=${#string}
+echo -n "+"
+for ((i=-2;i<size;i++))
+do
+echo -n "-"
+done
+echo "+"
+echo "| $string |"
+echo -n "+"
+for ((i=-2;i<size;i++))
+do
+echo -n "-"
+done
+echo "+"
 ```
+
+<img width="546" alt="Снимок экрана 2024-09-02 в 17 40 27" src="https://github.com/user-attachments/assets/845b4bde-ade7-4100-9ea9-605e9cfcd597">
+
 ## Задача 4
 
 ```bash
