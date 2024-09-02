@@ -31,7 +31,8 @@ done
 echo "+"
 ```
 
-<img width="546" alt="Снимок экрана 2024-09-02 в 17 40 27" src="https://github.com/user-attachments/assets/845b4bde-ade7-4100-9ea9-605e9cfcd597">
+<img width="419" alt="Снимок экрана 2024-09-02 в 17 46 44" src="https://github.com/user-attachments/assets/1ee736f0-1cc2-4ecb-b299-fbaf5e5179ac">
+
 
 ## Задача 4
 
@@ -50,6 +51,7 @@ chmod +x "$1"
 sudo cp "$1" /usr/local/bin/
 
 ```
+<img width="374" alt="Снимок экрана 2024-09-02 в 17 48 01" src="https://github.com/user-attachments/assets/94a474c9-13f6-4958-b44d-645fc337cacf">
 
 ## Задача 6
 
