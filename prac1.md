@@ -2,12 +2,13 @@
 ```bash
 cut -d: -f1 /etc/passwd | sort
 ```
+<img width="535" alt="Снимок экрана 2024-09-02 в 17 23 10" src="https://github.com/user-attachments/assets/1da34af6-0a62-4d29-a974-f489c2641102">
 
 ## Задача 2
 ```bash
 cat /etc/protocols | tail -n 5 | sort -nrk2 | awk '{print $2, $1}'
 ```
-
+<img width="649" alt="Снимок экрана 2024-09-02 в 17 23 50" src="https://github.com/user-attachments/assets/fd300c35-fb6f-444a-9bca-ed7ad99922dd">
 
 ## Задача 3
 
@@ -26,6 +27,8 @@ echo "$border"
 ```bash
 grep -o '\b[a-zA-Z_][a-zA-Z0-9_]*\b' main.cpp | sort | uniq
 ```
+<img width="624" alt="Снимок экрана 2024-09-02 в 17 24 30" src="https://github.com/user-attachments/assets/74f37063-b7ef-4d1d-bce8-916bae674247">
+
 
 ## Задача 5
 
