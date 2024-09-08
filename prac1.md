@@ -86,8 +86,12 @@ find "$1" -type f -exec md5sum {} + | sort | uniq -w32 -dD
 ## Задача 8
 
 ```bash
-find . -name "*.$1" -print0 | tar -czvf archive.tar.gz --null -T -
+#!/bin/bash
+
+find . -name "*.$1" -print0 -maxdepth 1 | tar -czvf archive.tar.gz --null -T -
 ```
+<img width="340" alt="Снимок экрана 2024-09-08 в 22 23 35" src="https://github.com/user-attachments/assets/453333e8-ce6e-4a1c-87bb-2685e01c6504">
+
 
 ## Задача 9
 
@@ -96,9 +100,19 @@ find . -name "*.$1" -print0 | tar -czvf archive.tar.gz --null -T -
 
 sed 's/    /\t/g' "$1" > "$2"
 ```
+<img width="486" alt="Снимок экрана 2024-09-08 в 22 26 33" src="https://github.com/user-attachments/assets/c1d2c237-63eb-45ad-9964-6b90f018cb2d">
+<img width="243" alt="Снимок экрана 2024-09-08 в 22 26 56" src="https://github.com/user-attachments/assets/8da96636-3d24-4327-960c-daffcb06b623">
+<img width="202" alt="Снимок экрана 2024-09-08 в 22 27 03" src="https://github.com/user-attachments/assets/82e8b5e3-fd30-4a13-850a-59fb2933ea81">
+
+
 
 ## Задача 10
 
 ```bash
+#!/bin/bash
+
 find "$1" -type f -empty -name "*.txt"
 ```
+
+<img width="907" alt="Снимок экрана 2024-09-08 в 22 29 17" src="https://github.com/user-attachments/assets/664cf864-43fd-444f-bb70-6d0e736a639a">
+
