@@ -51,6 +51,8 @@ chmod +x "$1"
 sudo cp "$1" /usr/local/bin/
 
 ```
+<img width="357" alt="Снимок экрана 2024-09-08 в 22 13 00" src="https://github.com/user-attachments/assets/cd705903-4b9f-491d-865a-c49d69fdf23e">
+
 
 ## Задача 6
 
