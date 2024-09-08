@@ -58,17 +58,22 @@ sudo cp "$1" /usr/local/bin/
 #!/bin/bash
 
 for file in "$@"; do
+  # Проверка на наличие допустимого расширения
   if [[ "$file" =~ \.(c|js|py)$ ]]; then
     first_line=$(head -n 1 "$file")
-    if [[ "$first_line" =~ ^# ]] || [[ "$first_line" =~ ^// ]]; then
+
+    # Проверка на комментарий в первой строке для разных типов файлов
+    if [[ "$file" =~ \.c$ && "$first_line" =~ ^// ]] || \
+       [[ "$file" =~ \.js$ && "$first_line" =~ ^// ]] || \
+       [[ "$file" =~ \.py$ && "$first_line" =~ ^# ]]; then
       echo "$file has a comment in the first line."
     else
       echo "$file does not have a comment in the first line."
     fi
   fi
 done
-
 ```
+<img width="376" alt="Снимок экрана 2024-09-08 в 22 11 31" src="https://github.com/user-attachments/assets/815b94e6-90cc-4130-899b-05531ec06a77">
 
 ## Задача 7
 
