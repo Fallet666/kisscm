@@ -80,8 +80,30 @@ done
 ## Задача 7
 
 ```bash
+#!/bin/bash
+
 find "$1" -type f -exec md5sum {} + | sort | uniq -w32 -dD
 ```
+так должно работать, но проверить я не могу (на MacOS нет w32)
+
+```bash
+#!/bin/bash
+
+# Создание временного файла для хранения хэшей
+temp_file=$(mktemp)
+
+# Поиск всех файлов в указанной директории и вычисление их MD5-хэшей
+find "$1" -type f -exec md5 -r {} + -maxdepth 1 | sort > "$temp_file"
+
+# Нахождение и вывод дубликатов
+awk '{seen[substr($0, 1, 32)]++} seen[substr($0, 1, 32)] == 2 {print $2}' "$temp_file"
+
+rm "$temp_file"
+```
+<img width="397" alt="Снимок экрана 2024-09-08 в 22 50 38" src="https://github.com/user-attachments/assets/a86d58f7-ea80-46f8-af34-aa86a9c13d41">
+
+
+
 
 ## Задача 8
 
