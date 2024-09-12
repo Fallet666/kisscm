@@ -1,4 +1,4 @@
 user: "alexey"
 host: "virtual-machine"
 filesystem: "virtual_fs.zip"
-startup_script: "startup.sh"
+startup_script: "startup.txt"

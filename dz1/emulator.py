@@ -2,10 +2,14 @@ import shutil
 import zipfile
 import argparse
 import os
+import shlex
+from colorama import Fore, Style, init
+init(autoreset=True)
 
 import yaml
 
-class VShell:
+
+class VCL:
     def __init__(self, config_path):
         self.config = self.load_config(config_path)
         self.currentpath = ""
@@ -16,32 +20,35 @@ class VShell:
         self.filesystem = zipfile.ZipFile(self.config['filesystem'])
         self.filesystemlist = self.filesystem.filelist
 
-
     def load_config(self, config_path):
         with open(config_path, 'r') as file:
             return yaml.safe_load(file)
+
     def start(self):
         while True:
-            cmd = input(f'{self.user}:{self.currentpath}/$ ').split(" ")
-            if cmd[0].lower() == "ls":
-                self.ls(cmd[1] if len(cmd) > 1 else "")
-            elif cmd[0].lower() == "cd":
-                self.cd(cmd[1] if len(cmd) > 1 else "")
-            elif cmd[0].lower() == "rev":
-                self.rev(cmd[1] if len(cmd) > 1 else "")
-            elif cmd[0].lower() == "du":
-                self.du(cmd[1] if len(cmd) > 1 else "")
-            elif cmd[0].lower() == "mv":
-                if len(cmd) >= 3:
-                    self.mv(cmd[1], cmd[2])
+            try:
+                cmd = input(f'{self.user}:{self.currentpath}/$ ').split(" ")
+                if cmd[0].lower() == "ls":
+                    self.ls(cmd[1] if len(cmd) > 1 else "")
+                elif cmd[0].lower() == "cd":
+                    self.cd(cmd[1] if len(cmd) > 1 else "")
+                elif cmd[0].lower() == "rev":
+                    self.rev(cmd[1] if len(cmd) > 1 else "")
+                elif cmd[0].lower() == "du":
+                    self.du(cmd[1] if len(cmd) > 1 else "")
+                elif cmd[0].lower() == "mv":
+                    if len(cmd) >= 3:
+                        self.mv(cmd[1], cmd[2])
+                    else:
+                        print("Usage: mv <source> <destination>")
+                elif cmd[0].lower() == "clear" or cmd[0].lower() == "cls":
+                    self.clear()
+                elif cmd[0].lower() == 'exit':
+                    break
                 else:
-                    print("Usage: mv <source> <destination>")
-            elif cmd[0].lower() == "clear" or cmd[0].lower() == "cls":
-                self.clear()
-            elif cmd[0].lower() == 'exit':
-                break
-            else:
-                print('Unknown command.')
+                    print('Unknown command.')
+            except ...:
+                print(f'{Fore.RED}Some error.')
 
     def ls(self, newpath: str):
         path = self.currentpath
@@ -50,14 +57,14 @@ class VShell:
         elif newpath in ("~", "/"):
             path = ""
         else:
-            path += "/" + newpath
+            path = self.currentpath + "/" + newpath if not newpath.startswith("/") else newpath
         if path != "":
             path = path.lstrip("/")
 
         # Проверка существования директории
         flag = any(path in file.filename for file in self.filesystemlist)
         if not flag:
-            print(f'Directory "{newpath}" does not exist.')
+            print(f'{Fore.RED}Directory "{newpath}" does not exist.')
             return
 
         displayed_files = set()  # Множество для отслеживания уникальных имен
@@ -71,23 +78,26 @@ class VShell:
                     print(files[0])
                     displayed_files.add(files[0])  # Добавляем файл или каталог в множество
 
-
     def cd(self, newpath: str):
         if "/root" in newpath:
             newpath = newpath.replace('/root/', '')
-            if any(newpath in file.filename for file in self.filesystemlist):
+            if any(file.filename.startswith(newpath) for file in self.filesystemlist):
                 self.currentpath = "/" + newpath
+            else:
+                print(f'{Fore.RED}Directory "{newpath}" does not exist.')
         elif newpath == "..":
-            self.currentpath = '/'.join(self.currentpath.split('/')[:-1])
-            return True
+            self.currentpath = '/'.join(self.currentpath.split('/')[:-1]) or "/"
         elif newpath in ("~", "/"):
             self.currentpath = ""
-            return True
         elif newpath:
-            if any(newpath in file.filename for file in self.filesystemlist):
-                self.currentpath += "/" + newpath
-                return True
-        return False
+            # Формируем новый путь, избегая двойного слеша
+            new_path = self.currentpath + "/" + newpath if not newpath.startswith("/") else newpath
+            # Проверяем, существует ли новый путь
+            if any(file.filename.startswith(new_path.lstrip("/")) for file in self.filesystemlist):
+                self.currentpath = new_path
+            else:
+                print(f'{Fore.RED}Directory "{newpath}" does not exist.')
+
 
     def clear(self):
         os.system('cls||clear')
@@ -102,7 +112,7 @@ class VShell:
 
         # Проверяем, существует ли файл в файловой системе
         if not any(file.filename == file_path for file in self.filesystemlist):
-            print(f"Error while opening {filename}. File not found.")
+            print(f'{Fore.RED}Error while opening {filename}. File not found.')
             return
 
         try:
@@ -116,14 +126,13 @@ class VShell:
                         print(line)
                 else:
                     # Если файл не текстовый
-                    print(f"Error: '{filename}' is not a text file and cannot be reversed.")
+                    print(f"{Fore.RED}Error: '{filename}' is not a text file and cannot be reversed.")
         except UnicodeDecodeError:
-            print(f"Error: '{filename}' is not a text file and cannot be read as UTF-8.")
+            print(f"{Fore.RED}Error: '{filename}' is not a text file and cannot be read as UTF-8.")
         except KeyError:
-            print(f"Error while opening {filename}.")
+            print(f"{Fore.RED}Error while opening {filename}.")
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-
+            print(f"{Fore.RED}An unexpected error occurred: {e}")
 
     def du(self, path: str):
         path = self.currentpath + "/" + path if path else self.currentpath
@@ -132,7 +141,11 @@ class VShell:
         for file in self.filesystemlist:
             if file.filename.startswith(path):
                 total_size += file.file_size
-        print(f"Size: {total_size} bytes")
+        print(f"Size: {total_size} bytes ", end='')
+        if total_size>=1024*1024:
+            print(f'[{round(total_size/1024/1024, 2)} Mb]')
+        else:
+            print()
 
     # def mv(self, source: str, destination: str):
     def mv(self, source: str, destination: str):
@@ -174,11 +187,9 @@ class VShell:
             print(f"Moved '{source}' to '{destination}'")
 
         except KeyError:
-            print(f"Error: file '{source}' could not be found or moved.")
+            print(f"{Fore.RED}Error: file '{source}' could not be found or moved.")
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-
-
+            print(f"{Fore.RED}An unexpected error occurred: {e}")
 
     def remove_file(self, filename):
         with zipfile.ZipFile(self.config['filesystem'], 'r') as zip_file:
@@ -188,7 +199,8 @@ class VShell:
             for file in file_data.values():
                 zip_file.writestr(file.filename, zip_file.read(file.filename))
 
-    def run_script(self, script_file: str):
+    def run_script(self):
+        script_file = self.start_script
         try:
             with open(script_file, 'r') as file:
                 for line in file:
@@ -197,7 +209,7 @@ class VShell:
             print(f"Script file '{script_file}' not found.")
 
     def execute_command(self, command: str):
-        cmd = command.split(" ")
+        cmd = shlex.split(command)
         if cmd[0].lower() == "ls":
             self.ls(cmd[1] if len(cmd) > 1 else "")
         elif cmd[0].lower() == "cd":
@@ -218,16 +230,16 @@ class VShell:
         else:
             print('Unknown command.')
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="VShell")
-    parser.add_argument('filesystem_archive', help="Path to the filesystem archive.")
-    parser.add_argument('--script', help="Path to a script file containing commands.")
+    parser.add_argument('config', help="Path to the config.")
 
     args = parser.parse_args()
 
-    vshell = VShell(args.filesystem_archive)
+    vshell = VCL(args.config)
 
-    if args.script:
-        vshell.run_script(args.script)
-    else:
-        vshell.start()
+    if vshell.start_script:
+        vshell.run_script()
+
+    vshell.start()
