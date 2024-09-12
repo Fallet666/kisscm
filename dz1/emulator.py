@@ -43,6 +43,8 @@ class VCL:
                         print("Usage: mv <source> <destination>")
                 elif cmd[0].lower() == "clear" or cmd[0].lower() == "cls":
                     self.clear()
+                elif cmd[0].lower() == 'aboba':
+                    self.aboba()
                 elif cmd[0].lower() == 'exit':
                     break
                 else:
@@ -229,6 +231,15 @@ class VCL:
             exit()
         else:
             print('Unknown command.')
+    def aboba(self):
+        print("""
+            ******* ****** ****** ****** *******
+            *     * *   *  *    * *   *  *     *
+            ******* ***    *    * ***    *******
+            *     * *   *  *    * *   *  *     *
+            *     * ****** ****** ****** *     *                                 
+        """)
+
 
 
 if __name__ == '__main__':
