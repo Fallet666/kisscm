@@ -1,0 +1,2 @@
+- [Практики](https://github.com/Fallet666/kisscm/tree/main/pracs)
+- [ДЗ_1](https://github.com/Fallet666/kisscm/tree/main/dz1)
