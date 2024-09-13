@@ -4,13 +4,12 @@ import unittest
 import os
 import zipfile
 import yaml
-import emulator as vcl  # Импортируем твой модуль с эмулятором
+import emulator as vcl
 
 class TestShellEmulator(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # Создаем тестовый конфигурационный файл config_test.yaml
         config_data = {
             'user': 'test_user',
             'host': 'test_host',
@@ -23,13 +22,11 @@ class TestShellEmulator(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # Удаляем созданные тестовые файлы
         os.remove('config_test.yaml')
         os.remove('virtual_fs_test.zip')
 
     @classmethod
     def setUp(self):
-        # Пересоздаем тестовый zip файл virtual_fs_test.zip
         with zipfile.ZipFile('virtual_fs_test.zip', 'w') as zf:
             zf.writestr('test_directory/file1.txt', 'Test file 1 content')
             zf.writestr('test_directory/file2.txt', 'Test file 2 content')
@@ -38,10 +35,8 @@ class TestShellEmulator(unittest.TestCase):
 
     def test_load_config(self):
         self.setUp()
-        # Создаем экземпляр класса VCL
         vc = vcl.VCL('config_test.yaml')
 
-        # Загружаем конфигурацию и проверяем соответствие значений
         config = vc.load_config('config_test.yaml')
         self.assertEqual(config['user'], 'test_user')
         self.assertEqual(config['host'], 'test_host')
@@ -150,10 +145,9 @@ class TestShellEmulator(unittest.TestCase):
     def test_mv_file(self):
         self.setUp()
         vc = vcl.VCL('config_test.yaml')
-        vc.currentpath = 'test_directory'  # Устанавливаем текущий путь для контекста
-        vc.mv('file1.txt', 'subdir')  # Перемещаем файл в поддиректорию
+        vc.currentpath = 'test_directory'
+        vc.mv('file1.txt', 'subdir')
 
-        # Проверяем, что файл переместился в правильную директорию
         self.assertIn('test_directory/subdir/file1.txt', [f.filename for f in vc.filesystemlist])
 
     def test_mv_nonexistent_file(self):
