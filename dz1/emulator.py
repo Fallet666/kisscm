@@ -231,6 +231,7 @@ class VCL:
         else:
             print('Unknown command.')
 
+    # пасхалка
     def aboba(self):
         print("""
         ░█████╗░██████╗░░█████╗░██████╗░░█████╗░
