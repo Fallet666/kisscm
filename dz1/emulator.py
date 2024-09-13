@@ -13,7 +13,6 @@ class VCL:
     def __init__(self, config_path):
         self.config = self.load_config(config_path)
         self.currentpath = ""
-        self.config = self.load_config(config_path)
         self.user = self.config['user']
         self.host = self.config['host']
         self.start_script = self.config['startup_script']
@@ -124,8 +123,8 @@ class VCL:
                 if file_path.endswith('.txt'):
                     # Читаем как текст
                     lines = [x.decode('utf8').strip() for x in f.readlines()]
-                    for line in lines[::-1]:
-                        print(line)
+                    for line in lines:
+                        print(line[::-1])
                 else:
                     # Если файл не текстовый
                     print(f"{Fore.RED}Error: '{filename}' is not a text file and cannot be reversed.")
