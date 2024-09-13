@@ -6,6 +6,7 @@ import zipfile
 import yaml
 import emulator as vcl
 
+
 class TestShellEmulator(unittest.TestCase):
 
     @classmethod
@@ -19,7 +20,6 @@ class TestShellEmulator(unittest.TestCase):
         with open('config_test.yaml', 'w') as file:
             yaml.dump(config_data, file)
 
-
     @classmethod
     def tearDownClass(cls):
         os.remove('config_test.yaml')
@@ -31,7 +31,6 @@ class TestShellEmulator(unittest.TestCase):
             zf.writestr('test_directory/file1.txt', 'Test file 1 content')
             zf.writestr('test_directory/file2.txt', 'Test file 2 content')
             zf.writestr('test_directory/subdir/file3.txt', 'Test file 3 content')
-
 
     def test_load_config(self):
         self.setUp()
@@ -57,6 +56,7 @@ class TestShellEmulator(unittest.TestCase):
         output = captured_output.getvalue().strip().split('\n')
         expected_output = ['file1.txt', 'file2.txt']
         self.assertEqual(output, expected_output)
+
     def test_ls_subdirectory(self):
         self.setUp()
         vc = vcl.VCL('config_test.yaml')
@@ -162,7 +162,6 @@ class TestShellEmulator(unittest.TestCase):
 
         output = captured_output.getvalue().strip()
         self.assertIn('Source file', output)
-
 
 
 if __name__ == '__main__':

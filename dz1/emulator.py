@@ -4,6 +4,7 @@ import argparse
 import os
 import shlex
 from colorama import Fore, Style, init
+
 init(autoreset=True)
 
 import yaml
@@ -99,7 +100,6 @@ class VCL:
             else:
                 print(f'{Fore.RED}Directory "{newpath}" does not exist.')
 
-
     def clear(self):
         os.system('cls||clear')
 
@@ -143,8 +143,8 @@ class VCL:
             if file.filename.startswith(path):
                 total_size += file.file_size
         print(f"Size: {total_size} bytes ", end='')
-        if total_size>=1024*1024:
-            print(f'[{round(total_size/1024/1024, 2)} Mb]')
+        if total_size >= 1024 * 1024:
+            print(f'[{round(total_size / 1024 / 1024, 2)} Mb]')
         else:
             print()
 
@@ -230,6 +230,7 @@ class VCL:
             exit()
         else:
             print('Unknown command.')
+
     def aboba(self):
         print("""
         ░█████╗░██████╗░░█████╗░██████╗░░█████╗░
@@ -239,7 +240,6 @@ class VCL:
         ██║░░██║██████╦╝╚█████╔╝██████╦╝██║░░██║
         ╚═╝░░╚═╝╚═════╝░░╚════╝░╚═════╝░╚═╝░░╚═╝                            
         """)
-
 
 
 if __name__ == '__main__':
