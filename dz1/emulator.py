@@ -1,11 +1,14 @@
+import io
 import shutil
+import sys
 import zipfile
 import argparse
 import os
 import shlex
-from colorama import Fore, Style, init
+import tkinter as tk
+from tkinter import scrolledtext
 
-init(autoreset=True)
+
 
 import yaml
 
@@ -50,7 +53,7 @@ class VCL:
                 else:
                     print('Unknown command.')
             except ...:
-                print(f'{Fore.RED}Some error.')
+                print(f'Some error.')
 
     def ls(self, newpath: str):
         path = self.currentpath
@@ -66,7 +69,7 @@ class VCL:
         # Проверка существования директории
         flag = any(path in file.filename for file in self.filesystemlist)
         if not flag:
-            print(f'{Fore.RED}Directory "{newpath}" does not exist.')
+            print(f'Directory "{newpath}" does not exist.')
             return
 
         displayed_files = set()  # Множество для отслеживания уникальных имен
@@ -86,7 +89,7 @@ class VCL:
             if any(file.filename.startswith(newpath) for file in self.filesystemlist):
                 self.currentpath = "/" + newpath
             else:
-                print(f'{Fore.RED}Directory "{newpath}" does not exist.')
+                print(f'Directory "{newpath}" does not exist.')
         elif newpath == "..":
             self.currentpath = '/'.join(self.currentpath.split('/')[:-1]) or "/"
         elif newpath in ("~", "/"):
@@ -98,7 +101,7 @@ class VCL:
             if any(file.filename.startswith(new_path.lstrip("/")) for file in self.filesystemlist):
                 self.currentpath = new_path
             else:
-                print(f'{Fore.RED}Directory "{newpath}" does not exist.')
+                print(f'Directory "{newpath}" does not exist.')
 
     def clear(self):
         os.system('cls||clear')
@@ -113,7 +116,7 @@ class VCL:
 
         # Проверяем, существует ли файл в файловой системе
         if not any(file.filename == file_path for file in self.filesystemlist):
-            print(f'{Fore.RED}Error while opening {filename}. File not found.')
+            print(f'Error while opening {filename}. File not found.')
             return
 
         try:
@@ -127,13 +130,13 @@ class VCL:
                         print(line[::-1])
                 else:
                     # Если файл не текстовый
-                    print(f"{Fore.RED}Error: '{filename}' is not a text file and cannot be reversed.")
+                    print(f"Error: '{filename}' is not a text file and cannot be reversed.")
         except UnicodeDecodeError:
-            print(f"{Fore.RED}Error: '{filename}' is not a text file and cannot be read as UTF-8.")
+            print(f"Error: '{filename}' is not a text file and cannot be read as UTF-8.")
         except KeyError:
-            print(f"{Fore.RED}Error while opening {filename}.")
+            print(f"Error while opening {filename}.")
         except Exception as e:
-            print(f"{Fore.RED}An unexpected error occurred: {e}")
+            print(f"An unexpected error occurred: {e}")
 
     def du(self, path: str):
         path = self.currentpath + "/" + path if path else self.currentpath
@@ -188,9 +191,9 @@ class VCL:
             print(f"Moved '{source}' to '{destination}'")
 
         except KeyError:
-            print(f"{Fore.RED}Error: file '{source}' could not be found or moved.")
+            print(f"Error: file '{source}' could not be found or moved.")
         except Exception as e:
-            print(f"{Fore.RED}An unexpected error occurred: {e}")
+            print(f"An unexpected error occurred: {e}")
 
     def remove_file(self, filename):
         with zipfile.ZipFile(self.config['filesystem'], 'r') as zip_file:
@@ -228,6 +231,8 @@ class VCL:
             self.clear()
         elif cmd[0].lower() == 'exit':
             exit()
+        elif cmd[0].lower() == "mv":
+            self.aboba()
         else:
             print('Unknown command.')
 
@@ -242,6 +247,99 @@ class VCL:
         ╚═╝░░╚═╝╚═════╝░░╚════╝░╚═════╝░╚═╝░░╚═╝                            
         """)
 
+class GuiIO:
+    def __init__(self, vcl_instance):
+        self.vcl_instance = vcl_instance
+
+        self.window = tk.Tk()
+        self.window.title("VCL GUI")
+        # Информационная панель слева (имя пользователя и директория)
+        self.info_label = tk.Label(self.window, text=f"{self.vcl_instance.user}:{self.vcl_instance.currentpath}/$", anchor="e")
+        self.info_label.grid(column=1, row=1, padx=10, pady=10, sticky="ew")
+
+        # Текстовая область для вывода
+        self.output_area = scrolledtext.ScrolledText(self.window, wrap=tk.WORD, width=200, height=60)
+        self.output_area.grid(column=0, columnspan=4, row=0, padx=10, pady=10, sticky="nsew")
+        self.output_area.config(state=tk.DISABLED)
+
+        # Поле ввода для команд
+        self.input_field = tk.Entry(self.window, width=50)
+        self.input_field.grid(column=2,  row=1, padx=10, pady=10, sticky="ew")
+
+        self.input_field.bind('<Return>', lambda event: self.process_input())
+        # Кнопка для отправки команды
+        self.enter_button = tk.Button(self.window, text="Ввод", command=self.process_input)
+        self.enter_button.grid(column=3, row=1, padx=10, pady=10, sticky="ew")
+
+        self.aboba_label = tk.Label(self.window, text="ABOBA VIRTUAL SHELL", font=("Arial", 24), fg="red")
+        self.aboba_label.grid(column=0, row=1, padx=10, pady=20, sticky="s")
+
+        self.window.grid_columnconfigure(0, weight=1)
+
+        # Перехватываем стандартный вывод
+        sys.stdout = self
+        sys.stdin = self
+
+        # Запускаем основной цикл GUI
+        self.window.mainloop()
+
+    def write(self, message):
+        """Переопределение print."""
+        self.output_area.config(state=tk.NORMAL)
+        self.output_area.insert(tk.END, message + "\n")
+        self.output_area.config(state=tk.DISABLED)
+        self.output_area.see(tk.END)
+
+    def update_info(self):
+        """Обновляем информацию о пользователе и директории."""
+        self.info_label.config(text=f"{self.vcl_instance.user}:{self.vcl_instance.currentpath}/$")
+
+    def flush(self):
+        """Необходим для совместимости с sys.stdout."""
+        pass
+
+    def process_input(self):
+        """Получение команды из поля ввода и отправка в VCL."""
+        command = self.input_field.get()
+        self.input_field.delete(0, tk.END)  # Очищаем поле ввода
+
+        # Выводим введенную команду как в командной строке
+        print(f'{self.vcl_instance.user}:{self.vcl_instance.currentpath}/$ {command}')
+
+        # Здесь вызываем обработку команды из вашего VCL
+        self.execute_command(command)
+
+        self.update_info()
+
+    def execute_command(self, command):
+        """Выполняет команду через экземпляр VCL."""
+        cmd = command.split(" ")
+        if cmd[0].lower() == "ls":
+            self.vcl_instance.ls(cmd[1] if len(cmd) > 1 else "")
+        elif cmd[0].lower() == "cd":
+            self.vcl_instance.cd(cmd[1] if len(cmd) > 1 else "")
+        elif cmd[0].lower() == "rev":
+            self.vcl_instance.rev(cmd[1] if len(cmd) > 1 else "")
+        elif cmd[0].lower() == "du":
+            self.vcl_instance.du(cmd[1] if len(cmd) > 1 else "")
+        elif cmd[0].lower() == "mv":
+            if len(cmd) >= 3:
+                self.vcl_instance.mv(cmd[1], cmd[2])
+            else:
+                print("Usage: mv <source> <destination>")
+        elif cmd[0].lower() == "exit":
+            self.window.quit()
+        elif cmd[0].lower() == "aboba":
+            self.vcl_instance.aboba()
+        else:
+            print('Unknown command.')
+
+    def readline(self):
+        """Переопределение input."""
+        self.input_field.wait_variable(tk.StringVar())  # Ожидаем ввода
+        return self.input_field.get()
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="VShell")
@@ -254,4 +352,4 @@ if __name__ == '__main__':
     if vshell.start_script:
         vshell.run_script()
 
-    vshell.start()
+    gui = GuiIO(vshell)
