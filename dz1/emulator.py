@@ -139,7 +139,7 @@ class VCL:
             print(f"An unexpected error occurred: {e}")
 
     def du(self, path: str):
-        path = self.currentpath + "/" + path if path else self.currentpath
+        path = self.currentpath + "/" + path if not path.startswith("/") else path
         path = path.lstrip("/")
         total_size = 0
         for file in self.filesystemlist:
