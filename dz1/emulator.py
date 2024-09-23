@@ -102,6 +102,8 @@ class VCL:
                 self.currentpath = new_path
             else:
                 print(f'Directory "{newpath}" does not exist.')
+        while "//" in self.currentpath:
+            self.currentpath = self.currentpath.replace('//', '/')
 
     def clear(self):
         os.system('cls||clear')
