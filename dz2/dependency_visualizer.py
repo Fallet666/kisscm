@@ -35,17 +35,20 @@ class MavenDependencyVisualizer:
         for dependency in dependencies:
             group_id = dependency.find('mvn:groupId', ns).text
             artifact_id = dependency.find('mvn:artifactId', ns).text
-            version = dependency.find('mvn:version', ns).text if dependency.find('mvn:version', ns) is not None else "unknown"
+            version_elem = dependency.find('mvn:version', ns)
+            version = version_elem.text if version_elem is not None else "unknown"
 
             # Если версия представлена как переменная (${...}), ищем её в properties
             if version.startswith('${') and version.endswith('}'):
                 version_key = version[2:-1]  # Удаляем ${ и }
                 version = properties.get(version_key, "unknown")
 
+            # Логируем информацию о зависимости
+            print(f"Обрабатываем зависимость: {group_id}:{artifact_id}, версия: {version}")
+
             parsed_deps.append((group_id, artifact_id, version))
 
         return parsed_deps
-
 
     def process_dependencies(self, pom_file, current_group=None):
         """Обрабатываем зависимости, включая транзитивные."""
@@ -56,25 +59,25 @@ class MavenDependencyVisualizer:
         for group_id, artifact_id, version in dependencies:
             dep_key = f"{group_id}:{artifact_id}:{version}"
 
-            # Проверяем, обрабатывали ли мы эту зависимость ранее
-            if dep_key not in self.processed_artifacts:
+            if version != "unknown" and dep_key not in self.processed_artifacts:
                 self.dependencies[current_group].append((artifact_id, version))
                 self.processed_artifacts.add(dep_key)
 
                 # Попробуем найти транзитивные зависимости
                 if self.repo_url:
-                    # Загружаем pom.xml транзитивных зависимостей по URL
                     transitive_url = f"{self.repo_url}/{group_id.replace('.', '/')}/{artifact_id}/{version}/{artifact_id}-{version}.pom"
                     try:
                         transitive_pom = self.download_pom(transitive_url)
                         transitive_deps = self.parse_pom(transitive_pom)
                         for t_group_id, t_artifact_id, t_version in transitive_deps:
-                            t_dep_key = f"{t_group_id}.{t_artifact_id}:{t_version}"
-                            if t_dep_key not in self.processed_artifacts:
-                                self.dependencies[group_id].append((t_artifact_id, t_version))
-                                self.processed_artifacts.add(t_dep_key)
+                            if t_version != "unknown":
+                                t_dep_key = f"{t_group_id}:{t_artifact_id}:{t_version}"
+                                if t_dep_key not in self.processed_artifacts:
+                                    self.dependencies[group_id].append((t_artifact_id, t_version))
+                                    self.processed_artifacts.add(t_dep_key)
                     except Exception as e:
                         print(f"Не удалось загрузить транзитивные зависимости для {dep_key}: {e}")
+
 
     def generate_mermaid_code(self):
         """Генерируем Mermaid-код для визуализации зависимостей."""
@@ -82,8 +85,12 @@ class MavenDependencyVisualizer:
         for group, deps in self.dependencies.items():
             for dep in deps:
                 artifact, version = dep
-                mermaid_lines.append(f'    {group} --> {artifact}:{version};')
-
+                if version != "unknown":
+                    artifact = artifact.replace(" ", "")
+                    artifact = artifact.replace("\n", "")
+                    version = version.replace(" ", "")
+                    version = version.replace("\n", "")
+                    mermaid_lines.append(f'    {group} --> {artifact}:{version};')
         return "\n".join(mermaid_lines)
 
     def save_to_file(self, code):
