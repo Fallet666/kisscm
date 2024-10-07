@@ -4,16 +4,30 @@
 
 Решение:
 ```
-    groups: [
-      "ИКБО-" + std.asString(x) + "-23" for x in std.range(1, 24)
-    ],
-    students: [
-      { name: "Иванов И.И.", group: "ИКБО-4-20", age: 19 },
-      { name: "Петров П.П.", group: "ИКБО-5-20", age: 18 },
-      { name: "Сидоров С.С.", group: "ИКБО-5-20", age: 18 },
-      { name: "Коротков А.А.", group: "ИКБО-10-23", age: 19 }
-    ],
-    subject: "Конфигурационное управление"
+local groupPrefix = 'ИКБО-';
+local year = '-23';
+local groupNum = std.range(1, 10);
+
+local studentData = [
+  {name: "Коротков А. А.", age: 52, groupIndex: 3},
+  {name: "Жагло И. Д.", age: 20, groupIndex: 2},
+  {name: "Запрягаев М. А.", age: 19, groupIndex: 1},
+  {name: "Красоткин А. А.", age: 18, groupIndex: 4}
+];
+
+{
+  groups: [groupPrefix + std.toString(i) + year for i in groupNum],
+
+  students: [
+    {
+      age: student.age,
+      group: groupPrefix + std.toString(student.groupIndex) + year,
+      name: student.name
+    } for student in studentData
+  ],
+
+  subject: "Конфигурационное управление"
+}
  ```
 
 
@@ -22,24 +36,39 @@
 
 Решение:
 ```
- let List/length =
-        https://prelude.dhall-lang.org/v21.1.0/List/length
+let Group = Text
+let Student = { age : Natural, group : Group, name : Text }
 
-  let groups =
-        List/map Natural Text (\(i : Natural) -> "ИКБО-${Natural/show i}-23")
-        (List/replicate 24 Natural/successor 0)
-  
-  let students =
-      [ { name = "Иванов И.И.", group = "ИКБО-4-20", age = 19 }
-      , { name = "Петров П.П.", group = "ИКБО-5-20", age = 18 }
-      , { name = "Сидоров С.С.", group = "ИКБО-5-20", age = 18 }
-      , { name = "Коротков А.А.", group = "ИКБО-10-23", age = 19 }
+let createGroup : Natural -> Text =
+      λ(n : Natural) → "ИКБО-" ++ Natural/show n ++ "-23"
+
+let groups : List Text =
+      [ createGroup 1
+      , createGroup 2
+      , createGroup 3
+      , createGroup 4
+      , createGroup 5
+      , createGroup 6
+      , createGroup 7
+      , createGroup 8
+      , createGroup 9
+      , createGroup 10
       ]
-  
-  in  { groups = groups
-      , students = students
-      , subject = "Конфигурационное управление"
-      }
+
+let createStudent : Natural -> Group -> Text -> Student =
+      λ(age : Natural) →
+      λ(group : Group) →
+      λ(name : Text) →
+        { age = age, group = group, name = name }
+
+let students : List Student =
+  [ createStudent 52 (createGroup 3) "Коротков А. А."
+  , createStudent 19 (createGroup 2) "Жагло И. Д."
+  , createStudent 22 (createGroup 1) "Запрягаев М. А."
+  , createStudent 20 (createGroup 4) "Красоткин А. А."
+  ]
+
+in  { groups = groups, students = students, subject = "Конфигурационное управление" }
 ```
 
 
