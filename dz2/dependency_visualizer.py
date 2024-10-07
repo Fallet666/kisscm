@@ -78,10 +78,14 @@ class MavenDependencyVisualizer:
                     except Exception as e:
                         print(f"Не удалось загрузить транзитивные зависимости для {dep_key}: {e}")
 
-
     def generate_mermaid_code(self):
         """Генерируем Mermaid-код для визуализации зависимостей."""
         mermaid_lines = ["graph TD;"]
+        arts = []
+        for group, deps in self.dependencies.items():
+            for dep in deps:
+                artifact, version = dep
+                arts.append([artifact, version])
         for group, deps in self.dependencies.items():
             for dep in deps:
                 artifact, version = dep
@@ -90,13 +94,21 @@ class MavenDependencyVisualizer:
                     artifact = artifact.replace("\n", "")
                     version = version.replace(" ", "")
                     version = version.replace("\n", "")
-                    mermaid_lines.append(f'    {group} --> {artifact}:{version};')
+                    tmp = str(group).replace("org.", "")
+                    tmp = tmp.replace("com.", "")
+                    tmp = tmp.replace("io.", "")
+                    for i in arts:
+                        tmp_art, tmp_ver = i
+                        if tmp_art == tmp:
+                            tmp = tmp + ":" + tmp_ver
+                    mermaid_lines.append(f'    {tmp} --> {artifact}:{version};')
         return "\n".join(mermaid_lines)
 
     def save_to_file(self, code):
         """Сохраняем сгенерированный код в указанный файл."""
         with open(self.output_path, 'w') as f:
             f.write(code)
+
 
     def run(self):
         """Запуск основной логики программы."""

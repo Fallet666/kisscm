@@ -69,45 +69,76 @@ minizinc lucky_ticket.mzn
 ![pubgrub](https://github.com/user-attachments/assets/d1b61a1e-18dd-4e9c-9b58-498bfb48492b)
 
 ```minizinc
-% Определяем пакеты
-  enum PACKAGES = {
-      root, 
-      menu_1_0_0, menu_1_1_0, menu_1_2_0, menu_1_3_0, menu_1_4_0, menu_1_5_0, 
-      dropdown_2_0_0, dropdown_2_1_0, dropdown_2_2_0, dropdown_2_3_0, dropdown_1_8_0,
-      icons_1_0_0, icons_2_0_0
-  };
-  
-  % Переменные, указывающие, установлен ли пакет (1) или нет (0)
-  array[PACKAGES] of var 0..1: installed;
-  
-  % Обязательно устанавливаем root
-  constraint
-      installed[root] == 1;
-  
-  % Ограничения зависимостей
-  constraint
-      (installed[root] == 1) -> (installed[menu_1_0_0] == 1 /\ installed[menu_1_5_0] == 1 /\ installed[icons_1_0_0] == 1) /\
-      (installed[menu_1_5_0] == 1) -> (installed[dropdown_2_3_0] == 1 /\ installed[dropdown_2_0_0] == 1) /\
-      (installed[menu_1_4_0] == 1) -> (installed[dropdown_2_3_0] == 1 /\ installed[dropdown_2_0_0] == 1) /\
-      (installed[menu_1_3_0] == 1) -> (installed[dropdown_2_3_0] == 1 /\ installed[dropdown_2_0_0] == 1) /\
-      (installed[menu_1_2_0] == 1) -> (installed[dropdown_2_3_0] == 1 /\ installed[dropdown_2_0_0] == 1) /\
-      (installed[menu_1_1_0] == 1) -> (installed[dropdown_2_3_0] == 1 /\ installed[dropdown_2_0_0] == 1) /\
-      (installed[menu_1_0_0] == 1) -> (installed[dropdown_1_8_0] == 1) /\
-      (installed[dropdown_2_0_0] == 1) -> (installed[icons_2_0_0] == 1) /\
-      (installed[dropdown_2_1_0] == 1) -> (installed[icons_2_0_0] == 1) /\
-      (installed[dropdown_2_2_0] == 1) -> (installed[icons_2_0_0] == 1) /\
-      (installed[dropdown_2_3_0] == 1) -> (installed[icons_2_0_0] == 1);
-  
-  % Целевая функция: минимизируем количество установленных пакетов
-  solve minimize sum(installed);
-  
-  % Выводим результат
-  output [
-      "Installed packages: ", show(installed)
-  ];
+enum Package = {
+  root,
+  menu_1_0_0,
+  menu_1_1_0,
+  menu_1_2_0,
+  menu_1_3_0,
+  menu_1_4_0,
+  menu_1_5_0,
+
+  dropdown_1_8_0,
+  dropdown_2_0_0,
+  dropdown_2_1_0,
+  dropdown_2_2_0,
+  dropdown_2_3_0,
+
+  icons_1_0_0,
+  icons_2_0_0,
+};
+
+array[1..5] of set of Package: targets = [
+  1: { icons_1_0_0 },
+  2: { menu_1_0_0, menu_1_5_0 },
+  3: { dropdown_1_8_0 },
+  4: { dropdown_2_0_0, dropdown_2_3_0 },
+  5: { icons_2_0_0 }
+];
+
+% set points to targets array
+array[Package] of set of 1..5: dependencies = [
+  root: { 1, 2 },
+
+  menu_1_0_0: { 3 },
+  menu_1_1_0: { 4 },
+  menu_1_2_0: { 4 },
+  menu_1_3_0: { 4 },
+  menu_1_4_0: { 4 },
+  menu_1_5_0: { 4 },
+
+  dropdown_1_8_0: {},
+  dropdown_2_0_0: { 5 },
+  dropdown_2_1_0: { 5 },
+  dropdown_2_2_0: { 5 },
+  dropdown_2_3_0: { 5 },
+
+  icons_1_0_0: {},
+  icons_2_0_0: {},
+];
+
+array[Package] of var opt (1..100): install_order;
+
+constraint occurs(install_order[root]);
+
+constraint forall(p in Package where occurs(install_order[p])) (
+  forall(dep in dependencies[p]) (
+    exists(t in targets[dep]) (
+      occurs(install_order[t]) /\
+      install_order[t] < install_order[p]
+    )
+  )
+);
+
+output [
+  if fix(occurs(install_order[p]))
+  then "\(p): \(install_order[p])\n"
+  else ""
+  endif | p in Package
+];
   ```
 
-<img width="480" alt="Снимок экрана 2024-09-23 в 13 35 29" src="https://github.com/user-attachments/assets/b15a069b-f8a9-458d-8fca-cc64ae832f3e">
+<img width="106" alt="Снимок экрана 2024-10-07 в 17 43 05" src="https://github.com/user-attachments/assets/ab7ef726-ff77-4675-88a0-e1ac3f12b245">
 
 ## Задача 6
 
@@ -124,39 +155,79 @@ target 2.0.0 и 1.0.0 не имеют зависимостей.
 ```
 Решение
 ```minizinc
- % Определяем пакеты
-  enum PACKAGES = {
-      root, 
-      foo_1_0_0, foo_1_1_0, 
-      left_1_0_0, right_1_0_0, 
-      shared_1_0_0, shared_2_0_0, 
-      target_1_0_0, target_2_0_0
-  };
-  
-  % Переменные, указывающие, установлен ли пакет (1) или нет (0)
-  array[PACKAGES] of var 0..1: installed;
-  
-  % Ограничения зависимостей
-  constraint
-      (installed[root] == 1) -> (installed[foo_1_1_0] == 1 /\ installed[target_2_0_0] == 1) /\
-      (installed[foo_1_1_0] == 1) -> (installed[left_1_0_0] == 1 /\ installed[right_1_0_0] == 1) /\
-      (installed[left_1_0_0] == 1) -> (installed[shared_1_0_0] == 1) /\
-      (installed[right_1_0_0] == 1) -> (installed[shared_2_0_0] == 1) /\ (installed[shared_1_0_0] == 0) /\
-      (installed[shared_1_0_0] == 1) -> (installed[target_1_0_0] == 1);
-  
-  % Обязательно устанавливаем root
-  constraint
-      installed[root] == 1;
-  
-  % Целевая функция: минимизируем количество установленных пакетов
-  solve minimize sum(installed);
-  
-  % Выводим результат
-  output [
-      "Installed packages: ", show(installed)
-  ];
+enum Package = {
+  root_1_0_0,
+
+  foo_1_1_0,
+  foo_1_0_0,
+
+  left_1_0_0,
+  right_1_0_0,
+
+  shared_2_0_0,
+  shared_1_0_0,
+
+  target_2_0_0,
+  target_1_0_0,
+};
+
+int: n = 7;
+
+array[1..n] of set of Package: targets = [
+  % Deps of root 1.0.0
+  1: { foo_1_1_0, foo_1_0_0 },
+  2: { target_2_0_0 },
+
+  % Deps of foo 1.1.0
+  3: { left_1_0_0 },
+  4: { right_1_0_0 },
+
+  % Deps of left 1.0.0
+  5: { shared_1_0_0, shared_2_0_0 },
+
+  % Deps of right 1.0.0
+  6: { shared_1_0_0 },
+
+  % Deps of shared 1.0.0
+  7: { target_1_0_0 },
+];
+
+% set points to targets array
+array[Package] of set of 1..n: dependencies = [
+  root_1_0_0: { 1, 2 },
+  foo_1_1_0: { 3, 4 },
+  left_1_0_0: { 5 },
+  right_1_0_0: { 6 },
+  shared_1_0_0: { 7 },
+
+  foo_1_0_0: { },
+  shared_2_0_0: { },
+
+  target_2_0_0: { },
+  target_1_0_0: { },
+];
+
+array[Package] of var opt (1..100): install_order;
+
+constraint occurs(install_order[root_1_0_0]);
+
+constraint forall(p in Package where occurs(install_order[p])) (
+  forall(dep in dependencies[p]) (
+    exists(t in targets[dep]) (
+      occurs(install_order[t]) /\
+      install_order[t] < install_order[p]
+    )
+  )
+);
+
+output [
+  if fix(occurs(install_order[p]))
+  then "\(p): \(install_order[p])\n"
+  else ""
+  endif | p in Package
+];
 ```
-<img width="380" alt="Снимок экрана 2024-09-23 в 13 53 13" src="https://github.com/user-attachments/assets/2b57693e-0b8a-4306-ba97-cbadbffd77c6">
+<img width="102" alt="Снимок экрана 2024-10-07 в 17 44 52" src="https://github.com/user-attachments/assets/b9c524ea-4c80-407a-bd99-7201790fc5ad">
 
 ## Задача 7
 
