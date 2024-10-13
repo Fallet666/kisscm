@@ -84,7 +84,7 @@ class MavenDependencyVisualizer:
 
     def generate_mermaid_code(self):
         """Генерируем Mermaid-код для визуализации зависимостей."""
-        mermaid_lines = ["graph TD;"]
+        mermaid_lines = ["%%{init: {'theme': 'base', 'themeVariables': {}, 'flowchart': {'rankSpacing': 250, 'nodeSpacing': 100}} }%%","graph TD;"]
         arts = []
         for group, deps in self.dependencies.items():
             for dep in deps:
