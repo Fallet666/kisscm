@@ -164,26 +164,37 @@ y & ~(y)
 ```
 
 ### Решение:
+```python
+import random
+
+
+def parse_bnf(text):
+    '''
+    Преобразовать текстовую запись БНФ в словарь.
+    '''
+    grammar = {}
+    rules = [line.split('=') for line in text.strip().split('\n')]
+    for name, body in rules:
+        grammar[name.strip()] = [alt.split() for alt in body.split('/')]
+    return grammar
+
+
+def generate_phrase(grammar, start):
+    '''
+    Сгенерировать случайную фразу.
+    '''
+    if start in grammar:
+        seq = random.choice(grammar[start])
+        return ''.join([generate_phrase(grammar, name) for name in seq])
+    return str(start).replace('~~', '')
+
+
+BNF = '''
+expr = x / y / ( expr ) / ~ expr / expr & expr / expr | expr
+'''
+
+for i in range(10):
+    print(generate_phrase(parse_bnf(BNF), 'expr'))
 ```
-<expression> ::= <term>
-               | <open> <term> <operation> <term> <close>
-               | <negative> <open> <term> <operation> <term> <close>
-               | <open> <expression> <operation> <expression> <close>
-               | <negative> <open> <expression> <close>
 
-<term> ::= <variable>
-         | <negative> <variable>
-         | <open> <variable> <operation> <variable> <close>
-         | <negative> <open> <variable> <operation> <variable> <close>
-
-<variable> ::= x | y | z | w
-
-<operation> ::= & | |
-
-<negative> ::= ~
-
-<open> ::= (
-
-<close> ::= )
-```
-  
+<img width="409" alt="Снимок экрана 2024-10-14 в 16 36 37" src="https://github.com/user-attachments/assets/01b1b87b-d203-4fc5-b7d5-7f872b6dd965">
