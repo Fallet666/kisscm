@@ -30,8 +30,7 @@ std::string jsonToConfig(const json::value &jv) {
             ss << val.as_int64() << ", ";
           }
         }
-        ss.seekp(-2,
-                 std::stringstream::cur); // Убираем последнюю запятую и пробел
+        ss.seekp(-2, std::stringstream::cur);
         ss << " )\n";
       }
     }
@@ -77,10 +76,10 @@ int main(int argc, char *argv[]) {
     writeFile(outputFile, configContent);
 
     std::cout << "Transformation completed successfully.\n";
-  } catch (const std::exception& e) {
-      std::cerr << "Error: " << e.what() << std::endl;
-        return 1;
-    }
+  } catch (const std::exception &e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
+  }
 
-    return 0;
+  return 0;
 }
