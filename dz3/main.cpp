@@ -21,19 +21,19 @@ std::string jsonToConfig(const json::value &jv) {
         std::cout << "invalid key: " << key << "\n";
         continue;
       }
-      if(key == "comment") {
-        std::string temp = value.as_string().c_str();
-        if(temp.find('\n')!=std::string::npos) {
-          ss <<"{{!\n";
-          for(const char& i : temp) {
-            if(i == '\n')
+      if (key == "comment") {
+        if (std::string temp = value.as_string().c_str();
+            temp.find('\n') != std::string::npos) {
+          ss << "{{!\n";
+          for (const char &i : temp) {
+            if (i == '\n')
               ss << "\n";
             else
               ss << i;
           }
-          ss<<"\n}}";
+          ss << "\n}}";
         } else {
-          ss << "// " << temp<< "\n";
+          ss << "// " << temp << "\n";
         }
         continue;
       }
