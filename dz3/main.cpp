@@ -21,6 +21,22 @@ std::string jsonToConfig(const json::value &jv) {
         std::cout << "invalid key: " << key << "\n";
         continue;
       }
+      if(key == "comment") {
+        std::string temp = value.as_string().c_str();
+        if(temp.find('\n')!=std::string::npos) {
+          ss <<"{{!\n";
+          for(const char& i : temp) {
+            if(i == '\n')
+              ss << "\n";
+            else
+              ss << i;
+          }
+          ss<<"\n}}";
+        } else {
+          ss << "// " << temp<< "\n";
+        }
+        continue;
+      }
       if (value.is_int64()) {
         ss << "var " << key << " := " << value.as_int64() << "\n";
       } else if (value.is_array()) {

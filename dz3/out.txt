@@ -1,2 +1,6 @@
 var log_level := 3
 var log_outputs := array( 1, 2, 3 )
+{{!
+comment 
+new line
+}}
