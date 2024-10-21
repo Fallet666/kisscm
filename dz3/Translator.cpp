@@ -16,7 +16,7 @@ Translator::Translator(const std::string &inputFile,
 }
 
 bool Translator::keyValidator(const std::string &key) {
-  return !std::all_of(key.begin(), key.end(), [](const char &c) {
+  return std::all_of(key.begin(), key.end(), [](const char &c) {
     return std::islower(c) || c == '_';
   });
 }
@@ -27,7 +27,7 @@ std::string Translator::jsonToConfig(const json::value &jv) {
   if (jv.is_object()) {
     auto obj = jv.as_object();
     for (const auto &[key, value] : obj) {
-      if (keyValidator(key)) {
+      if (!keyValidator(key)) {
         std::cout << "invalid key: " << key << "\n";
         continue;
       }
