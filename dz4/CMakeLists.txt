@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 enable_testing()
 include_directories(interpret)
-include_directories(assebmle)
+include_directories(assemble)
 add_library(ass_lib
-        assebmle/Assemble.cpp
+        assemble/Assemble.cpp
 )
 add_library(inter_lib
         interpret/Interpret.cpp
