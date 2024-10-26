@@ -111,7 +111,7 @@ TEST(Assemble, Assembler_Or) {
 
 TEST(Inerpret, Interpret_Write) {
   std::ofstream input("test_input.txt");
-  input << "LOAD_CONSTANT 52 0"<<std::endl;
+  input << "LOAD_CONSTANT 52 0" << std::endl;
   input << "MEMORY_WRITE 0 31 0";
   input.close();
   Assemble("test_input.txt", "test_output.bin", "test_log.csv");
