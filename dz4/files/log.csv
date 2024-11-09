@@ -1,5 +1,41 @@
-A = 0, B = 52, C = 0
-A = 1, B = 0, C = 31, D = 0
-A = 0, B = 132, C = 1
-A = 0, B = 12904, C = 10
-A = 3, B = 0, C = 1, D = 2
+LOAD_CONSTANT: A = 0, B (constant) = 100, C (register) = 0
+LOAD_CONSTANT: A = 0, B (constant) = 101, C (register) = 1
+LOAD_CONSTANT: A = 0, B (constant) = 102, C (register) = 2
+LOAD_CONSTANT: A = 0, B (constant) = 103, C (register) = 3
+LOAD_CONSTANT: A = 0, B (constant) = 104, C (register) = 4
+LOAD_CONSTANT: A = 0, B (constant) = 105, C (register) = 5
+LOAD_CONSTANT: A = 0, B (constant) = 106, C (register) = 6
+LOAD_CONSTANT: A = 0, B (constant) = 107, C (register) = 7
+LOAD_CONSTANT: A = 0, B (constant) = 200, C (register) = 8
+LOAD_CONSTANT: A = 0, B (constant) = 201, C (register) = 9
+LOAD_CONSTANT: A = 0, B (constant) = 202, C (register) = 10
+LOAD_CONSTANT: A = 0, B (constant) = 203, C (register) = 11
+LOAD_CONSTANT: A = 0, B (constant) = 204, C (register) = 12
+LOAD_CONSTANT: A = 0, B (constant) = 205, C (register) = 13
+LOAD_CONSTANT: A = 0, B (constant) = 206, C (register) = 14
+LOAD_CONSTANT: A = 0, B (constant) = 207, C (register) = 15
+MEMORY_WRITE: A = 1, B (value) = 8, C (register) = 24, D (offset) = 0
+MEMORY_WRITE: A = 1, B (value) = 9, C (register) = 24, D (offset) = 1
+MEMORY_WRITE: A = 1, B (value) = 10, C (register) = 24, D (offset) = 2
+MEMORY_WRITE: A = 1, B (value) = 11, C (register) = 24, D (offset) = 3
+MEMORY_WRITE: A = 1, B (value) = 12, C (register) = 24, D (offset) = 4
+MEMORY_WRITE: A = 1, B (value) = 13, C (register) = 24, D (offset) = 5
+MEMORY_WRITE: A = 1, B (value) = 14, C (register) = 24, D (offset) = 6
+MEMORY_WRITE: A = 1, B (value) = 15, C (register) = 24, D (offset) = 7
+MEMORY_WRITE: A = 1, B (value) = 16, C (register) = 24, D (offset) = 8
+OR: A = 3, B (offset) = 0, C (register) = 0, D (memory address register) = 24
+OR: A = 3, B (offset) = 1, C (register) = 1, D (memory address register) = 24
+OR: A = 3, B (offset) = 2, C (register) = 2, D (memory address register) = 24
+OR: A = 3, B (offset) = 3, C (register) = 3, D (memory address register) = 24
+OR: A = 3, B (offset) = 4, C (register) = 4, D (memory address register) = 24
+OR: A = 3, B (offset) = 5, C (register) = 5, D (memory address register) = 24
+OR: A = 3, B (offset) = 6, C (register) = 6, D (memory address register) = 24
+OR: A = 3, B (offset) = 7, C (register) = 7, D (memory address register) = 24
+MEMORY_WRITE: A = 1, B (value) = 0, C (register) = 24, D (offset) = 0
+MEMORY_WRITE: A = 1, B (value) = 1, C (register) = 24, D (offset) = 1
+MEMORY_WRITE: A = 1, B (value) = 2, C (register) = 24, D (offset) = 2
+MEMORY_WRITE: A = 1, B (value) = 3, C (register) = 24, D (offset) = 3
+MEMORY_WRITE: A = 1, B (value) = 4, C (register) = 24, D (offset) = 4
+MEMORY_WRITE: A = 1, B (value) = 5, C (register) = 24, D (offset) = 5
+MEMORY_WRITE: A = 1, B (value) = 6, C (register) = 24, D (offset) = 6
+MEMORY_WRITE: A = 1, B (value) = 7, C (register) = 24, D (offset) = 7
