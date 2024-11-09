@@ -2,6 +2,7 @@
 #define ASSEMBLE_H
 
 #include <fstream>
+#include <iostream>
 #include <string>
 
 class Assemble {
