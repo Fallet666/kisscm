@@ -1,7 +1,6 @@
 #include "Assemble.h"
 #include "Interpret.h"
 #include <gtest/gtest.h>
-#include <iostream>
 
 TEST(Assemble, Assembler_load) {
   std::ofstream input("test_input.asm");
