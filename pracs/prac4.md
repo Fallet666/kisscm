@@ -167,20 +167,101 @@ To /Users/user/Downloads/server.git
 ```python
 import subprocess
 
-def list_git_objects():
-    try:
-        # Получаем список всех объектов в репозитории
-        git_objects = subprocess.check_output(["git", "cat-file", "--batch-check"], universal_newlines=True)
-        # Выводим содержимое каждого объекта
-        for obj_line in git_objects.strip().splitlines():
-            obj_hash, obj_type, _ = obj_line.split()
-            print(f"\n=== {obj_type.capitalize()} {obj_hash} ===")
-            content = subprocess.check_output(["git", "cat-file", "-p", obj_hash], universal_newlines=True)
-            print(content)
-    except subprocess.CalledProcessError as e:
-        print(f"Ошибка выполнения команды: {e}")
+def get_git_objects():
+    # Получаем список всех объектов (хешей) в репозитории
+    result = subprocess.run(["git", "rev-list", "--all", "--objects"], capture_output=True, text=True)
+    if result.returncode != 0:
+        print("Ошибка при получении списка объектов:", result.stderr)
+        return []
+    # Парсим вывод и извлекаем хеши объектов
+    return [line.split()[0] for line in result.stdout.splitlines() if line]
+
+def show_object_content(obj_hash):
+    # Выводим содержимое объекта с помощью git cat-file -p
+    result = subprocess.run(["git", "cat-file", "-p", obj_hash], capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Ошибка при выводе содержимого объекта {obj_hash}:", result.stderr)
+    else:
+        print(f"\n--- Содержимое объекта {obj_hash} ---\n")
+        print(result.stdout)
+
+def main():
+    # Получаем все объекты и выводим их содержимое
+    objects = get_git_objects()
+    for obj_hash in objects:
+        show_object_content(obj_hash)
 
 if __name__ == "__main__":
-    list_git_objects()
+    main()
 ```
 
+Результат
+
+```bash
+/usr/local/bin/python3.11 /Users/user/Downloads/project/prog.py
+
+--- Содержимое объекта da025c3e36a14f0b64ffab6b18824b5fde8bf2f1 ---
+
+tree d5a5f8ade8540cc988954c22f3dc0d38eb5a6984
+parent 3701e301d3ece44de2dbb4e1da31ac5e252488c1
+author Alex Korotkov <115859651+Fallet666@users.noreply.github.com> 1730734308 +0300
+committer Alex Korotkov <115859651+Fallet666@users.noreply.github.com> 1730734308 +0300
+
+coder 1 info
+
+
+--- Содержимое объекта 3701e301d3ece44de2dbb4e1da31ac5e252488c1 ---
+
+tree 9a4878997c8b7f626bdd2f3d8c0604fafa93ad2e
+parent 1334ccaa928b9619fa8620e0de22e024b81f1900
+author Alex Korotkov <115859651+Fallet666@users.noreply.github.com> 1730734198 +0300
+committer Alex Korotkov <115859651+Fallet666@users.noreply.github.com> 1730734198 +0300
+
+docs
+
+
+--- Содержимое объекта 1334ccaa928b9619fa8620e0de22e024b81f1900 ---
+
+tree a0eadedc56e2b7dcb61b25ce4547e6f18fadb9fc
+author Alex Korotkov <115859651+Fallet666@users.noreply.github.com> 1730733601 +0300
+committer Alex Korotkov <115859651+Fallet666@users.noreply.github.com> 1730733601 +0300
+
+first commit
+
+
+--- Содержимое объекта d5a5f8ade8540cc988954c22f3dc0d38eb5a6984 ---
+
+100644 blob 11832af078d315b7eb0f2f150a4301e6e1e2b866	prog.py
+100644 blob 688f7ef6fa215b707b08d64c771a0ae43adb333f	readme.md
+
+
+--- Содержимое объекта 11832af078d315b7eb0f2f150a4301e6e1e2b866 ---
+
+# Sample Python program
+
+
+--- Содержимое объекта 688f7ef6fa215b707b08d64c771a0ae43adb333f ---
+
+# Description of the project
+## Authors
+Coder 1
+
+
+--- Содержимое объекта 9a4878997c8b7f626bdd2f3d8c0604fafa93ad2e ---
+
+100644 blob 11832af078d315b7eb0f2f150a4301e6e1e2b866	prog.py
+100644 blob e7891f922b6e3d35a264b38c75ec9104e8d4e005	readme.md
+
+
+--- Содержимое объекта e7891f922b6e3d35a264b38c75ec9104e8d4e005 ---
+
+# Description of the project
+
+
+--- Содержимое объекта a0eadedc56e2b7dcb61b25ce4547e6f18fadb9fc ---
+
+100644 blob 11832af078d315b7eb0f2f150a4301e6e1e2b866	prog.py
+
+
+Process finished with exit code 0
+```
