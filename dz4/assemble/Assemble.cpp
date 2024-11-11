@@ -143,7 +143,7 @@ Assemble::Assemble(const std::string &inputFile, const std::string &outputFile,
                   << "', operand: '" << operand << "'" << std::endl;
         return;
       } catch (...) {
-        std::cerr << "Syntax error. Load constant failed. " << inputFile
+        std::cerr << "Syntax error. Memory read failed " << inputFile
                   << std::endl;
         std::cerr << "input: '" << input << "', register: '" << reg
                   << "', operand: '" << operand << "'" << std::endl;
@@ -183,7 +183,7 @@ Assemble::Assemble(const std::string &inputFile, const std::string &outputFile,
                   << std::endl;
         return;
       } catch (...) {
-        std::cerr << "Syntax error. Load constant failed. " << inputFile
+        std::cerr << "Syntax error. Memory write failed. " << inputFile
                   << std::endl;
         std::cerr << "input: '" << input << "', operand: '" << operand << " "
                   << plus << " " << shift << "', reg: '" << reg << "'"
@@ -223,7 +223,7 @@ Assemble::Assemble(const std::string &inputFile, const std::string &outputFile,
                   << std::endl;
         return;
       } catch (...) {
-        std::cerr << "Syntax error. Load constant failed. " << inputFile
+        std::cerr << "Syntax error. Bitwise or failed. " << inputFile
                   << std::endl;
         std::cerr << "input: '" << input << "', operand: '" << operand << " "
                   << plus << " " << shift << "', reg: '" << reg << "'"
