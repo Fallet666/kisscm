@@ -13,8 +13,6 @@ add_library(inter_lib
         interpret/Interpret.cpp
 )
 
-FIND_PACKAGE(Boost COMPONENTS json REQUIRED)
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
